@@ -11,26 +11,14 @@ import {
 import { CustomResponse } from './interface/custom-response';
 import { AppState } from './interface/app-state';
 import { DataState } from './enum/data-state.enum';
-import { CommonModule } from '@angular/common';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule, NgForm } from '@angular/forms';
 import { NotificationService } from './service/notification.service';
 import { Status } from './enum/status.enum';
 import { Server } from './interface/server';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  imports: [
-    CommonModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-    FormsModule,
-  ],
-  standalone: true,
   styleUrls: ['./app.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -74,10 +62,14 @@ export class AppComponent implements OnInit {
     this.filterSubject.next(ipAddress);
     this.appState$ = this.serverService.ping$(ipAddress).pipe(
       map((response) => {
-        const index = this.dataSubject.value.data.servers.findIndex(
+        const index = this.dataSubject.value.data.servers?.findIndex(
           (server) => server.id === response?.data?.server?.id
         );
-        this.dataSubject.value.data.servers[index] = response.data.server;
+        if (index !== undefined && index !== -1) {
+          if (this.dataSubject.value.data.servers) {
+            this.dataSubject.value.data.servers[index] = response.data.server!;
+          }
+        }
         this.notifier.onDefault(response.message);
         this.filterSubject.next('');
         return {
@@ -105,13 +97,16 @@ export class AppComponent implements OnInit {
           ...response,
           data: {
             servers: [
-              response.data.server,
-              ...this.dataSubject.value.data.servers,
+              response.data.server!,
+              ...(this.dataSubject.value.data.servers ?? []),
             ],
           },
         });
         this.notifier.onDefault(response.message);
-        document.getElementById('closeModal').click();
+        const closeModalElement = document.getElementById('closeModal');
+        if (closeModalElement) {
+          closeModalElement.click();
+        }
         this.isLoading.next(false);
         serverForm.resetForm({ status: this.Status.SERVER_DOWN });
         return {
@@ -180,7 +175,6 @@ export class AppComponent implements OnInit {
 
   printReport(): void {
     this.notifier.onDefault('Report downloaded');
-    // window.print();
     let dataType = 'application/vnd.ms-excel.sheet.macroEnabled.12';
     let tableSelect = document.getElementById('servers');
     let tableHtml = tableSelect?.outerHTML.replace(/ /g, '%20');
