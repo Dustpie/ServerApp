@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
 import static java.time.LocalDateTime.now;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -35,7 +38,8 @@ public class ServiceResource {
      * @return A collection of servers.
      */
     @GetMapping("/list")
-    public ResponseEntity<Response> getServers(@RequestParam(required = false) Integer limit) { // We use the @RequestParam annotation to retrieve the limit parameter from the request and Integer to convert it to an integer.
+    public ResponseEntity<Response> getServers(@RequestParam(required = false) Integer limit) throws InterruptedException { // We use the @RequestParam annotation to retrieve the limit parameter from the request and Integer to convert it to an integer.
+        TimeUnit.SECONDS.sleep(3); // We use the TimeUnit class to sleep the thread for 2 seconds.
         return ResponseEntity.ok(
                 Response.builder()
                         .timeStamp(now())
