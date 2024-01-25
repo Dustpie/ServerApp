@@ -1,6 +1,6 @@
 # ServerApp
 
-Disclaimer 12.01.2023:
+Disclaimer 21.01.2024:
 
 The Backend API calls work and can be tested with Postman.
 The Frontend is still under development.
