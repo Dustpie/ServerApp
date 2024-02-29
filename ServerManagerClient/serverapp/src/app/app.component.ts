@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ServerService } from './service/server.service';
 import {
@@ -15,19 +16,26 @@ import { NotificationService } from './service/notification.service';
 import { Status } from './enum/status.enum';
 import { Server } from './interface/server';
 import { NgForm } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { NotificationModule } from './notification.module';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
+  standalone: true,
+  imports: [HttpClientModule, FormsModule, NotificationModule, CommonModule],
   styleUrls: ['./app.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
-  appState$: Observable<AppState<CustomResponse>>;
+  appState$: Observable<AppState<CustomResponse>> | undefined;
   readonly DataState = DataState;
   readonly Status = Status;
   private filterSubject = new BehaviorSubject<string>('');
-  private dataSubject = new BehaviorSubject<CustomResponse>(null);
+  private dataSubject = new BehaviorSubject<CustomResponse>(
+    {} as CustomResponse
+  ); // Fix: Initialize with an empty object
   filterStatus$ = this.filterSubject.asObservable();
   private isLoading = new BehaviorSubject<boolean>(false);
   isLoading$ = this.isLoading.asObservable();

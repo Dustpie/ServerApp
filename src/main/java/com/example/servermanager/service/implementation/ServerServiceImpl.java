@@ -59,8 +59,8 @@ public class ServerServiceImpl implements ServerService {
      */
     @Override
     public Collection<Server> serverList(int limit) {
-        log.info("Fetching all  servers");
-        return serverRepo.findAll(PageRequest.of(0, limit)).toList();
+            log.info("Fetching all  servers");
+            return serverRepo.findAll(PageRequest.of(0, limit)).toList();
     }
 
     /**
